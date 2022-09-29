@@ -104,18 +104,7 @@ chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
 driver.get('https://dl.acm.org/profile/81100565162')
-"""
-"/html/body/div[1]/div/main/div[3]/div[1]/div[1]/div/div[2]/div"
-"""
-text = ""
-with open("paths.txt", "r") as file:
-    for line in file.readlines():
-        for my_elem in driver.find_elements(By.XPATH, line):
-            raw_text = my_elem.text
-            raw_text = raw_text.replace("\n", "; ")
-            text += raw_text
 
-    print(text)
 
 # for element in data:
 #     print(element)

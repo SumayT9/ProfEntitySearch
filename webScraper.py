@@ -16,7 +16,13 @@ class Scraper():
             self.chrome_options = Options()
             self.chrome_options.add_argument("--headless")
             self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=self.chrome_options)
-            self.field = field
+            if field == "class_name":
+                self.field = By.CLASS_NAME
+            elif field == "xpath":
+                self.field = By.XPATH
+            elif field == "tag_name":
+                self.field = By.TAG_NAME
+
 
     def get_text(self, path):
         self.driver.get(self.url)
@@ -24,17 +30,15 @@ class Scraper():
             for line in classNameFile.readlines():
                 l = str(line)
                 field, data = l.split("|")
-                print(data)
                 text = ""
                 for elem in self.driver.find_elements(self.field, data):
                     raw_text = elem.text
                     raw_text = raw_text.replace("\n", "; ")
                     text += raw_text + "; "
-                print(text)
                 self.data[field] += text + ". "
             return text
 
 
 if __name__ == "__main__":
-    scraper = Scraper("https://dblp.org/pid/40/3047.html", By.CLASS_NAME)
-    scraper.get_text("data_path_files/dblp.txt")
+    scraper = Scraper("https://scholar.google.com/citations?user=HaI6LesAAAAJ&hl=en", "class_name")
+    print(scraper.get_text("data_path_files/dblp.txt"))

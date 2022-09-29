@@ -1,58 +1,62 @@
-# from urllib.request import urlopen
-# from bs4 import BeautifulSoup
-# from googlesearch import search
-# import re
+from googlesearch import search
+from webScraper import Scraper
 
-# def extract_data_from_url(url):
-#     html = urlopen(url).read()
-#     soup = BeautifulSoup(html, features="html.parser")
 
-#     # kill all script and style elements
-#     for script in soup(['script', 'noscript', 'style', 'meta', 'header', 'footer', 'button', 'a']):
-#         script.extract()    # rip it out
+def collect_data(person):
+    text = ""
+    print("ACM Author Profile:")
+    text += scrape_acm(person)
+    print("DBLP")
+    text += scrape_dblp(person)
+    print("Orcid")
+    text += scrape_orcid(person)
+    print("IEEE Xplore")
+    text += scrape_IEEE(person)
+    print("UIUR Experts")
+    text += scrape_uiuc(person)
+    return text
 
-#     # get text
-#     # print(soup.prettify())
-#     text = soup.get_text()
 
-#     # break into lines and remove leading and trailing space on each
-#     lines = (line.strip() for line in text.splitlines())
-#     # break multi-headlines into a line each
-#     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-#     # drop blank lines
-#     chunks = (chunk if chunk.count(".") > 1 and chunk.count("@") == 0 and not chunk.startswith("https://") else None for chunk in chunks)
-#     text = ('. ').join(chunk for chunk in chunks if chunk)
-#     return text
+def scrape_acm(person):
+    query = person + " ACM author profile"
+    for url in search(query):
+        if "https://dl.acm.org/profile" in url:
+            scraper = Scraper(url, "xpath")
+            return scraper.get_text("data_path_files/ACM.txt") + "\n"
 
-# def search_google(query, n):
-#     urls = [url for url in search(query) if "ratemyprofessors" not in url and "reddit" not in url and "github.com" not in url]
-#     return urls[:n]
+def scrape_IEEE(person):
+    query = person + " IEEE xplore"
+    for url in search(query):
+        if "https://ieeexplore.ieee.org/" in url:
+            scraper = Scraper(url, "xpath")
+            return scraper.get_text("data_path_files/IEEE.txt") + "\n"
 
-# if __name__ == "__main__":
-#     url = "https://www.semanticscholar.org/author/Geoffrey-Challen/32203761"
-#     text = ""
-#     text += extract_data_from_url(url)
-#     # except:
-#     #     print("fail")
+def scrape_dblp(person):
+    query = person + " dblp"
+    for url in search(query):
+        if "https://dblp.org/pid" in url:
+            scraper = Scraper(url, "class_name")
+            return scraper.get_text("data_path_files/dblp.txt") + "\n"
 
-class webScraper():
-    def __init__(self, url):
-        self.data = {"Awards" : "", "Research Interests" : "", "Achievements" : "", "Education" : "", "Research Activities" : "", "Work Experience" : ""} 
-        self.url = url
+def scrape_uiuc(person):
+    query = person + " uiuc experts"
+    for url in search(query):
+        if "https://experts.illinois.edu/" in url:
+            scraper = Scraper(url, "class_name")
+            return scraper.get_text("data_path_files/uiuc.txt") + "\n"
+
+def scrape_orcid(person):
+    query = person + " orcid"
+    for url in search(query):
+        if "https://orcid.org/" in url:
+            scraper = Scraper(url, "tag_name")
+            return scraper.get_text("data_path_files/orcid.txt") + "\n"
+
+
+
+if __name__ == "__main__":
+    txt = collect_data("kevin chenchuan chang")
+    print(txt)
     
-    def get_text(self, path):
-        
-
-
-class ACMScraper(webScraper):
-    def __init__(self, url):
-        webScraper().__init__(url)
-    
-    def extract_data(self, pathFile):
-        with open(pathFile, "r") as file:
-            for line in file.readlines():
-                self.data["Research Interests"]
-
-
     
     
